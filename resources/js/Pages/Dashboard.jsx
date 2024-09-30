@@ -1,7 +1,19 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
-
-export default function Dashboard() {
+import InputError from '@/Components/InputError';
+import InputLabel from '@/Components/InputLabel';
+import PrimaryButton from '@/Components/PrimaryButton';
+import TextInput from '@/Components/TextInput';
+import axios from 'axios';
+import { Head, Link, useForm,router } from '@inertiajs/react';
+import { useState, useEffect} from 'react';
+export default function Dashboard(errors) {
+    const [IP, setIP]= useState("");
+    const submit = (e) => {
+        e.preventDefault();
+        router.post(route('ipinfo'), {
+            IP
+        });
+    };
     return (
         <AuthenticatedLayout
             header={
@@ -13,13 +25,29 @@ export default function Dashboard() {
             <Head title="Dashboard" />
 
             <div className="py-12">
-                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">
-                            You're logged in!
-                        </div>
-                    </div>
+            <form onSubmit={submit}>
+                <div>
+                    <InputLabel htmlFor="IP" value="IP" />
+
+                    <TextInput
+                        id="IP"
+                        type="text"
+                        name="IP"
+                        value={IP}
+                        className="mt-1 block w-full"
+                        isFocused={true}
+                        onChange={(e) => setIP(e.target.value)}
+                    />
+
+                    <InputError message={errors.IP} className="mt-2" />
                 </div>
+
+                <div className="mt-4 flex items-center justify-end">
+                    <PrimaryButton className="ms-4">
+                        FIND IP DETALS
+                    </PrimaryButton>
+                </div>
+            </form>
             </div>
         </AuthenticatedLayout>
     );
