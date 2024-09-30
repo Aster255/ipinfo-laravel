@@ -14,6 +14,12 @@ npm install
 cp .env.example .env
 ```
 
+## IP INFO env key
+
+```
+IPINFO_SECRET=
+```
+
 ## Run migrations
 
 ```shell
