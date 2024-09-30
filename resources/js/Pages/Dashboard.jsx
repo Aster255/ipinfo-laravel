@@ -7,6 +7,7 @@ import axios from 'axios';
 import { Head, Link, useForm,router } from '@inertiajs/react';
 import { useState, useEffect} from 'react';
 import TableComponents from "@/Components/TableComponents";
+import PaginationComponents from '@/Components/PaginationComponents';
 
 const columns = [
     { header: "id", key: "id" },
@@ -60,13 +61,14 @@ export default function Dashboard({errors,History}) {
                             data={History.data}
                             renderActions={(rowData) => (
                                 <>
-                                <Link href="/ip-geopos/{rowData.id}">
-                                <PrimaryButton>View</PrimaryButton>
-                                </Link>
-                                    
+                                    <Link href={`/ip-geopos/${rowData.id}`}>
+                                        <PrimaryButton>View</PrimaryButton>
+                                    </Link>
                                 </>
                             )}
                 ></TableComponents>
+
+            <PaginationComponents paginationData={History} />
             </form>
             </div>
         </AuthenticatedLayout>

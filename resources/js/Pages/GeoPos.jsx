@@ -7,6 +7,7 @@ import axios from 'axios';
 import { Head, Link, useForm,router } from '@inertiajs/react';
 import { useState, useEffect} from 'react';
 import TableComponents from "@/Components/TableComponents";
+import MyMap from '@/Components/Map';
 
 export default function GeoPos({history}) {
     const historyjson = JSON.parse(history.details); // Convert JSON string to JavaScript object
@@ -20,6 +21,7 @@ export default function GeoPos({history}) {
                 </h2>
             }
         >
+                <MyMap lat={historyjson.latitude} lng={historyjson.longitude}></MyMap>
         <table>
             <tr>
             <th>key</th>
@@ -46,7 +48,6 @@ export default function GeoPos({history}) {
             
 
         </table>
-
         </AuthenticatedLayout>
     );
 }
