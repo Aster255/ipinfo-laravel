@@ -6,7 +6,14 @@ import TextInput from '@/Components/TextInput';
 import axios from 'axios';
 import { Head, Link, useForm,router } from '@inertiajs/react';
 import { useState, useEffect} from 'react';
-export default function Dashboard(errors) {
+import TableComponents from "@/Components/TableComponents";
+
+const columns = [
+    { header: "id", key: "id" },
+    { header: "ip", key: "ip" },
+];
+
+export default function Dashboard({errors,History}) {
     const [IP, setIP]= useState("");
     const submit = (e) => {
         e.preventDefault();
@@ -14,15 +21,16 @@ export default function Dashboard(errors) {
             IP
         });
     };
+    console.log(History);
     return (
         <AuthenticatedLayout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Dashboard
+                    Dashboard IPINFO
                 </h2>
             }
         >
-            <Head title="Dashboard" />
+            <Head title="IPINFO" />
 
             <div className="py-12">
             <form onSubmit={submit}>
@@ -41,12 +49,24 @@ export default function Dashboard(errors) {
 
                     <InputError message={errors.IP} className="mt-2" />
                 </div>
-
                 <div className="mt-4 flex items-center justify-end">
                     <PrimaryButton className="ms-4">
                         FIND IP DETALS
                     </PrimaryButton>
                 </div>
+                <h1>Recent IP Lookups</h1>
+                <TableComponents
+                            columns={columns}
+                            data={History.data}
+                            renderActions={(rowData) => (
+                                <>
+                                <Link href="/ip-geopos/{rowData.id}">
+                                <PrimaryButton>View</PrimaryButton>
+                                </Link>
+                                    
+                                </>
+                            )}
+                ></TableComponents>
             </form>
             </div>
         </AuthenticatedLayout>

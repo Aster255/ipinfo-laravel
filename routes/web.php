@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ProfileController;
+use App\Models\History;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -19,7 +20,8 @@ Route::post('/generate-user', function () {
 })->name('generate-user');
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    $history=History::orderBy('updated_at', 'desc',)->paginate(10);
+    return Inertia::render('Dashboard',["History"=>$history]);    
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->post('/ipinfo',function(Request $request){
@@ -27,15 +29,30 @@ Route::middleware('auth')->post('/ipinfo',function(Request $request){
     $request->validate([
         'IP' => 'required|ip',
     ]);
-    
+    $user = Auth::user();
+
     $access_token = env('IPINFO_SECRET');
     $client = new IPinfo($access_token);
-    $ip_address = '216.239.36.21';
+    $ip_address = $request->IP;
     $details = $client->getDetails($ip_address);
     
-    dd($details);
+    
+    $history=History::create([
+        'ip'=>$request->IP,
+        'details'=>$details,
+        'user_id'=>$user->id
+    ]);
+
+    return Inertia::location(route('geo.show', ['id' => $history->id]));
+
 })->name('ipinfo');
 
+Route::get('/ip-geopos/{id}', function ($id) {
+    $history = History::findOrFail($id);    
+    return Inertia::render('GeoPos', [
+        'history' => $history,
+    ]);
+})->middleware(['auth'])->name('geo.show');
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
