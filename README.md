@@ -20,8 +20,12 @@ cp .env.example .env
 IPINFO_SECRET=
 ```
 
-## Run migrations
+## Genarate APP Key
+```shell
+php artisan key:generate
+```
 
+## Run migrations
 ```shell
 php artisan migrate
 ```
