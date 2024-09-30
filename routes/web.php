@@ -25,7 +25,6 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->post('/ipinfo',function(Request $request){
-    
     $request->validate([
         'IP' => 'required|ip',
     ]);
@@ -42,9 +41,7 @@ Route::middleware('auth')->post('/ipinfo',function(Request $request){
         'details'=>$details,
         'user_id'=>$user->id
     ]);
-
     return Inertia::location(route('geo.show', ['id' => $history->id]));
-
 })->name('ipinfo');
 
 Route::get('/ip-geopos/{id}', function ($id) {
@@ -53,6 +50,22 @@ Route::get('/ip-geopos/{id}', function ($id) {
         'history' => $history,
     ]);
 })->middleware(['auth'])->name('geo.show');
+
+Route::post('/delete-ip-history', function(Request $request){
+        $validator = Validator::make($request->all(), [
+            'ids' => 'required|array',
+            'ids.*' => 'exists:histories,id',
+        ]);
+
+        if ($validator->fails()) {
+            return;
+        }
+
+        History::whereIn('id', $request->ids)->delete();
+    })
+    ->middleware(['auth'])
+    ->name('delete-ip-history');
+    
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

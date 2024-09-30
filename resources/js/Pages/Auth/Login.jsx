@@ -13,18 +13,15 @@ export default function Login({errors,status, canResetPassword }) {
 
     const submit = (e) => {
         e.preventDefault();
-        console.log(email);
-        console.log(password);
         router.post(route('login'), {
             email,password
         });
     };
 
     const generateTestUser = () => {
-    console.log("a");
+
     axios.post(route('generate-user'), {}, {
     }).then((response) => {
-        console.log(response.data);
         setEmail(response.data.email);
         setPassword("password");
     });

@@ -2,6 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
+import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
 import axios from 'axios';
 import { Head, Link, useForm,router } from '@inertiajs/react';
@@ -16,18 +17,38 @@ const columns = [
 
 export default function Dashboard({errors,History}) {
     const [IP, setIP]= useState("");
+
+    const [selectedIds, setSelectedIds] = useState([])
+
+    const handleSelect = (id) => {
+        setSelectedIds((prevSelectedIds) => {
+            if (prevSelectedIds.includes(id)) {
+                return prevSelectedIds.filter(selectedId => selectedId !== id);
+            } else {
+                return [...prevSelectedIds, id];
+            }
+        });
+    };
+
+    const handleDelete = () => {
+        if (selectedIds.length === 0) return;
+        axios.post(route('delete-ip-history'), { ids: selectedIds })
+            .then(response => {
+                router.reload();
+            })
+    };
+
     const submit = (e) => {
         e.preventDefault();
         router.post(route('ipinfo'), {
             IP
         });
     };
-    console.log(History);
     return (
         <AuthenticatedLayout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Dashboard IPINFO
+                    IP INFO Home
                 </h2>
             }
         >
@@ -55,6 +76,21 @@ export default function Dashboard({errors,History}) {
                         FIND IP DETALS
                     </PrimaryButton>
                 </div>
+                </form>
+                {selectedIds.length?
+                <div className="mt-4 flex items-center justify-end">
+
+                <button
+                onClick={handleDelete}
+            className={
+                `inline-flex items-center rounded-md border border-gray-300 bg-red-500 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25`
+            }
+        >
+            Delete Selected
+        </button>
+        
+                </div>:<></>
+                }
                 <h1>Recent IP Lookups</h1>
                 <TableComponents
                             columns={columns}
@@ -64,12 +100,19 @@ export default function Dashboard({errors,History}) {
                                     <Link href={`/ip-geopos/${rowData.id}`}>
                                         <PrimaryButton>View</PrimaryButton>
                                     </Link>
+
+                                   <vr/>select
+                                   <input
+                                    type="checkbox"
+                                    checked={selectedIds.includes(rowData.id)}
+                                    onChange={() => handleSelect(rowData.id)}
+                                    />
                                 </>
                             )}
                 ></TableComponents>
 
             <PaginationComponents paginationData={History} />
-            </form>
+            
             </div>
         </AuthenticatedLayout>
     );

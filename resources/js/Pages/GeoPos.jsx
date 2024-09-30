@@ -10,9 +10,7 @@ import TableComponents from "@/Components/TableComponents";
 import MyMap from '@/Components/Map';
 
 export default function GeoPos({history}) {
-    const historyjson = JSON.parse(history.details); // Convert JSON string to JavaScript object
-
-    console.log(historyjson);
+    const historyjson = JSON.parse(history.details);
     return (
         <AuthenticatedLayout
             header={
@@ -21,7 +19,12 @@ export default function GeoPos({history}) {
                 </h2>
             }
         >
-                <MyMap lat={historyjson.latitude} lng={historyjson.longitude}></MyMap>
+            <Link href={`/dashboard`}>
+                <PrimaryButton className='m-3'>Back to IP INFO HOME</PrimaryButton>
+            </Link>
+            {historyjson.latitude && historyjson.longitude &&
+            <MyMap lat={historyjson.latitude} lng={historyjson.longitude}></MyMap>
+            }
         <table>
             <tr>
             <th>key</th>
